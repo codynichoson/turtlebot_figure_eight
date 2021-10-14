@@ -6,11 +6,11 @@ import rospy
 from turtlesim.msg import Pose
 from nav_msgs.msg import Odometry
 
-def sub_callback():
+def sub_callback(req):
     '''This is the callback function for the Pose subscriber'''
     something = 0
 
-def pub_callback():
+def pub_callback(req):
     '''This is the callback function for the Odometry publisher'''
     something = 0
 

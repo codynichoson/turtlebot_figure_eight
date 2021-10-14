@@ -8,14 +8,12 @@
 <!--Launch turtlesim node-->
 <node name="turtlesim_node" pkg="turtlesim" type="turtlesim_node" />
 
+<!--Launch trajectory node, including private parameter-->
+<node name="trajectory" pkg="homework2" type="trajectory">
+    <param name="rate" value="50"/>
+</node>
 
-<!--Launch trajectory node-->
-<node name="trajectory" pkg="homework2" type="trajectory" />
-
-<!--Launch follow node-->
-<!-- <node name="follow" pkg="turtle_control" type="follow" /> -->
-
-<!--Launch translate node-->
-<!-- <node name="translate" pkg="turtle_control" type="translate" /> -->
+<!--Launch simodom node-->
+<node name="simodom" pkg="homework2" type="simodom" />
 
 </launch>

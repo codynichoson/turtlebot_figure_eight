@@ -5,19 +5,28 @@ from geometry_msgs.msg import Twist, Vector3
 from std_srvs.srv import Empty, EmptyResponse
 
 def pause_func():
-    '''This is the callback function of the pause service. It takes only the request
-    argument and returns the response.'''
+    '''This is the callback function of the pause service'''
+
     # Publish velocities of zero
     pub.publish(Twist(Vector3(x = 0, y = 0, z = 0), Vector3(x = 0, y = 0, z = 0)))
     
 
 def resume_func():
+
+    # Publish velocities of something???
     pub.publish(Twist(Vector3(x = 1, y = 0, z = 0), Vector3(x = 0, y = 0, z = 0)))
 
 
 if __name__ == '__main__':
     rospy.init_node('trajectory')
 
+    # Retrieve parameters
+    width = rospy.get_param('width')
+    height = rospy.get_param('height')
+    period = rospy.get_param('period')
+    rate = rospy.get_param('~rate')
+
+    # Set publisher for cmd_vel
     pub = rospy.Publisher("cmd_vel", Twist, queue_size = 10)
 
     # Create pause service
@@ -26,7 +35,7 @@ if __name__ == '__main__':
     # Create resume service
     resume = rospy.Service("resume", Empty, resume_func)
 
-    rate = rospy.Rate(50)
+    set_rate = rospy.Rate(rate)
 
     # Spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
