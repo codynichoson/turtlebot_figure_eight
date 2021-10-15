@@ -5,6 +5,9 @@ import rospy
 from geometry_msgs.msg import Twist, Vector3
 from std_srvs.srv import Empty, EmptyResponse
 import sympy as sym
+import tf2_ros
+from homework2.mymodule import trajectory
+
 
 def pause_func():
     '''This is the callback function of the pause service'''
@@ -24,42 +27,45 @@ if __name__ == '__main__':
 
     rate = rospy.Rate(50)
 
-    # Retrieve parameters
-    W = rospy.get_param('width')
-    H = rospy.get_param('height')
-    T = rospy.get_param('period')
-    t = sym.symbols('t')
-    #rate = rospy.get_param('~rate')
-
-    x = (W/2)*sym.sin(2*sym.pi*t/T)
-    xdot = x.diff(t)
-
-    y = (H/2)*sym.sin(4*sym.pi*t/T)
-    ydot = y.diff(t)
-
-    theta = sym.atan(ydot/xdot)
-    thetadot = theta.diff(t)
-
-    v = sym.sqrt(xdot**2 + ydot**2)
-
-    ang_vel_func = sym.lambdify(t,thetadot)
-    lin_vel_func = sym.lambdify(t,v)
-
-    # Set publisher for cmd_vel
-    pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size = 10)
-
-    while not rospy.is_shutdown():
-        t = rospy.get_time()
-        pub.publish(Twist(Vector3(x = lin_vel_func(t), y = 0, z = 0), Vector3(x = 0, y = 0, z = ang_vel_func(t))))
-        rate.sleep()
-
     # Create pause service
     pause = rospy.Service("pause", Empty, pause_func)
 
     # Create resume service
     resume = rospy.Service("resume", Empty, resume_func)
 
-    
+    # Retrieve parameters
+    W = rospy.get_param('width')
+    H = rospy.get_param('height')
+    T = rospy.get_param('period')
+    #rate = rospy.get_param('~rate')
+
+    # Use Python package to calculate trajectory stuff
+    trajectory = trajectory(W, H, T)
+
+    # x = (W/2)*sym.sin(2*sym.pi*t/T)
+    # xdot = x.diff(t)
+
+    # y = (H/2)*sym.sin(4*sym.pi*t/T)
+    # ydot = y.diff(t)
+
+    # theta = sym.atan(ydot/xdot)
+    # thetadot = theta.diff(t)
+
+    # v = sym.sqrt(xdot**2 + ydot**2)
+
+    # ang_vel_func = sym.lambdify(t,thetadot)
+    # lin_vel_func = sym.lambdify(t,v)
+
+    # Set publisher for cmd_vel
+    pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size = 10)
+
+    # Create static broadcaster
+    broadcaster = tf2_ros.StaticTransformBroadcaster()
+
+    while not rospy.is_shutdown():
+        t = rospy.get_time()
+        pub.publish(Twist(Vector3(x = trajectory.lin_vel(t), y = 0, z = 0), Vector3(x = 0, y = 0, z = trajectory.ang_vel(t))))
+        rate.sleep()
 
     # Spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

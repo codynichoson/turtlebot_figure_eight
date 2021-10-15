@@ -5,10 +5,17 @@
 import rospy
 from turtlesim.msg import Pose
 from nav_msgs.msg import Odometry
+import tf2_ros
+from geometry_msgs.msg import TransformStamped
 
-def sub_callback(req):
+def convert_pose(Pose):
     '''This is the callback function for the Pose subscriber'''
-    something = 0
+    broadcaster = tf2_ros.TransformBroadcaster()
+    pub = rospy.Publisher("odom", Odometry, pub_callback)
+
+    #while not rospy.is_shutdown():
+    #    Odometry.header.frame_id = odom
+
 
 def pub_callback(req):
     '''This is the callback function for the Odometry publisher'''
@@ -17,9 +24,9 @@ def pub_callback(req):
 if __name__ == '__main__':
     rospy.init_node('simodom')
 
-    sub1 = rospy.Subscriber("turtle1/pose", Pose, sub_callback)
+    sub1 = rospy.Subscriber("turtle1/pose", Pose, convert_pose)
 
-    pub1 = rospy.Publisher("odom", Odometry, pub_callback)
+    
 
     # Spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
