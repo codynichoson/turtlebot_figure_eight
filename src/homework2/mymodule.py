@@ -30,7 +30,3 @@ class trajectory():
         theta0 = ang_func(0)
         return theta0
 
-#trajectory(5,5,5)
-# x = trajectory(5,5,5)
-# t = 10
-

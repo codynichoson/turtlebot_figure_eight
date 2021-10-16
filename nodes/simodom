@@ -7,40 +7,72 @@ from turtlesim.msg import Pose
 from nav_msgs.msg import Odometry
 import tf2_ros
 from geometry_msgs.msg import TransformStamped
+from tf_conversions import transformations
 
 
 def convert_pose(Pose):
     '''This is the callback function for the Pose subscriber'''
-    # read in x,y,z, lin and ang vel from pose
+    x = Pose.x
+    y = Pose.y
+    theta = Pose.theta
+    lin_velocity = Pose.linear_velocity
+    ang_velocity = Pose.angular_velocity
 
-    #odom2baselink
-
-
-
+    # Create broadcaster
     broadcaster = tf2_ros.TransformBroadcaster()
 
-    #copy and paste stuff from trajectory starting at quaternion
+    #Set up worldtf type?
+    odom_tf = TransformStamped()
 
-    #broadcast odom2baselink
+    # Set world_tf stamp, frame_id, child_id
+    odom_tf.header.stamp = rospy.Time.now()
+    odom_tf.header.frame_id = "odom"
+    odom_tf.child_frame_id = "base_link"
 
-    pub = rospy.Publisher("odom", Odometry, pub_callback)
+    # Set quaternion
+    quaternion = transformations.quaternion_from_euler(0,0,theta)
 
-    #geometry_msgs???
-    #odom = Odometry()
+    # Set world_tf transforms
+    odom_tf.transform.translation.x = 0
+    odom_tf.transform.translation.y = 0
+    odom_tf.transform.translation.z = 0
+    odom_tf.transform.rotation.x = quaternion[0]
+    odom_tf.transform.rotation.y = quaternion[1]
+    odom_tf.transform.rotation.z = quaternion[2]
+    odom_tf.transform.rotation.w = quaternion[3]
+
+    broadcaster.sendTransform(odom_tf)
+
+    pub = rospy.Publisher("odom", Odometry)
+
+    odom = Odometry()
+
+    odom.header.stamp = rospy.Time.now()
+    odom.header.frame_id = "odom"
+    odom.child_frame_id = 'base_link'
+
+    odom_quat = transformations.quaternion_from_euler(0,0,theta)
+
+    odom.pose.pose.position.x = 0
+    odom.pose.pose.position.y = 0
+    odom.pose.pose.position.z = 0
+    odom.pose.pose.orientation.x = odom_quat[0]
+    odom.pose.pose.orientation.y = odom_quat[1]
+    odom.pose.pose.orientation.z = odom_quat[2]
+    odom.pose.pose.orientation.w = odom_quat[3]
+    odom.twist.twist.linear.x = lin_velocity
+    odom.twist.twist.angular.z = ang_velocity
+
+    pub.publish(odom)
+
     #set odom header, frame_id, child_id, position, orientation, and twist
 
     #publish odom
-
-
-def pub_callback(req):
-    '''This is the callback function for the Odometry publisher'''
-    something = 0
 
 if __name__ == '__main__':
     rospy.init_node('simodom')
 
     sub1 = rospy.Subscriber("turtle1/pose", Pose, convert_pose)
-
     
 
     # Spin() simply keeps python from exiting until this node is stopped
