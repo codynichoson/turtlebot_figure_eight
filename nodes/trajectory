@@ -9,74 +9,85 @@ import tf2_ros
 from homework2.mymodule import trajectory
 from tf_conversions import transformations
 
+class Aclass:
+    def __init__(self):
+        self.flag = 0
+        self.rate = rospy.Rate(50)
 
-def pause_func():
-    '''This is the callback function of the pause service'''
+        self.pause = rospy.Service("pause", Empty, self.pause_func) # Create pause service
+        self.resume = rospy.Service("resume", Empty, self.resume_func) # Create resume service
+        # Set publisher for cmd_vel
+        self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size = 10)
 
-    # Publish velocities of zero
-    pub.publish(Twist(Vector3(x = 0, y = 0, z = 0), Vector3(x = 0, y = 0, z = 0)))
+        # Retrieve parameters
+        self.W = rospy.get_param('width')
+        self.H = rospy.get_param('height')
+        self.T = rospy.get_param('period')
+        #rate = rospy.get_param('~rate')
 
-def resume_func():
+        # Use Python package to calculate trajectory stuff
+        self.traj = trajectory(self.W, self.H, self.T)
 
-    # Publish velocities of something???
-    pub.publish(Twist(Vector3(x = 1, y = 0, z = 0), Vector3(x = 0, y = 0, z = 0)))
+        # Create world frame
+        self.static_broadcast
 
-def static_broadcast():
-    #define theta_world as initial theta0
-    theta_world = traj.theta0(0)
+        # Run loop
+        self.loopy()
 
-    # Create static broadcaster
-    stat_broadcaster = tf2_ros.StaticTransformBroadcaster()
+    def pause_func(self, req):
+        '''This is the callback function of the pause service'''
+        self.flag = 0
+        return EmptyResponse()
 
-    #Set up worldtf type?
-    world_tf = TransformStamped()
+    def resume_func(self, req):
+        '''This is the callback function of the resume service'''
+        self.flag = 1
+        return EmptyResponse()
 
-    # Set world_tf stamp, frame_id, child_id
-    world_tf.header.stamp = rospy.Time.now()
-    world_tf.header.frame_id = "world"
-    world_tf.child_frame_id = "odom"
+    def static_broadcast(self):
+        #define theta_world as initial theta0
+        theta_world = self.traj.theta0(0)
 
-    # Set quaternion
-    quaternion = transformations.quaternion_from_euler(0,0,theta_world)
+        # Create static broadcaster
+        stat_broadcaster = tf2_ros.StaticTransformBroadcaster()
 
-    # Set world_tf transforms
-    world_tf.transform.translation.x = 0
-    world_tf.transform.translation.y = 0
-    world_tf.transform.translation.z = 0
-    world_tf.transform.rotation.x = quaternion[0]
-    world_tf.transform.rotation.y = quaternion[1]
-    world_tf.transform.rotation.z = quaternion[2]
-    world_tf.transform.rotation.w = quaternion[3]
+        #Set up worldtf type?
+        world_tf = TransformStamped()
 
-    stat_broadcaster.sendTransform(world_tf)
+        # Set world_tf stamp, frame_id, child_id
+        world_tf.header.stamp = rospy.Time.now()
+        world_tf.header.frame_id = "world"
+        world_tf.child_frame_id = "odom"
+
+        # Set quaternion
+        quaternion = transformations.quaternion_from_euler(0,0,theta_world)
+
+        # Set world_tf transforms
+        world_tf.transform.translation.x = 0
+        world_tf.transform.translation.y = 0
+        world_tf.transform.translation.z = 0
+        world_tf.transform.rotation.x = quaternion[0]
+        world_tf.transform.rotation.y = quaternion[1]
+        world_tf.transform.rotation.z = quaternion[2]
+        world_tf.transform.rotation.w = quaternion[3]
+
+        stat_broadcaster.sendTransform(world_tf)
+    
+    def loopy(self):
+        
+        while not rospy.is_shutdown():
+            t = rospy.get_time()
+            if self.flag == 1:
+                self.pub.publish(Twist(Vector3(x = self.traj.lin_vel(t), y = 0, z = 0), Vector3(x = 0, y = 0, z = self.traj.ang_vel(t))))
+            elif self.flag == 0:
+                self.pub.publish(Twist(Vector3(x = 0, y = 0, z = 0), Vector3(x = 0, y = 0, z = 0)))
+
+            self.rate.sleep()
 
 if __name__ == '__main__':
     rospy.init_node('trajectory')
 
-    rate = rospy.Rate(50)
-    
-    pause = rospy.Service("pause", Empty, pause_func) # Create pause service
-    resume = rospy.Service("resume", Empty, resume_func) # Create resume service
-
-    # Retrieve parameters
-    W = rospy.get_param('width')
-    H = rospy.get_param('height')
-    T = rospy.get_param('period')
-    #rate = rospy.get_param('~rate')
-
-    # Use Python package to calculate trajectory stuff
-    traj = trajectory(W, H, T)
-
-    # Create world frame
-    static_broadcast()
-
-    # Set publisher for cmd_vel
-    pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size = 10)
-
-    while not rospy.is_shutdown():
-        t = rospy.get_time()
-        pub.publish(Twist(Vector3(x = traj.lin_vel(t), y = 0, z = 0), Vector3(x = 0, y = 0, z = traj.ang_vel(t))))
-        rate.sleep()
+    Aclass()
 
     # Spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
