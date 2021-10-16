@@ -24,3 +24,13 @@ class trajectory():
         ang_vel_func = sym.lambdify(self.t,thetadot)
         return ang_vel_func(time)
 
+    def theta0(self, time):
+        theta = sym.atan(self.ydot/self.xdot)
+        ang_func = sym.lambdify(self.t, theta)
+        theta0 = ang_func(0)
+        return theta0
+
+#trajectory(5,5,5)
+# x = trajectory(5,5,5)
+# t = 10
+

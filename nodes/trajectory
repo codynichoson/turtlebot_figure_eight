@@ -2,11 +2,12 @@
 
 import numpy as np
 import rospy
-from geometry_msgs.msg import Twist, Vector3
+from geometry_msgs.msg import Twist, Vector3, TransformStamped
 from std_srvs.srv import Empty, EmptyResponse
 import sympy as sym
 import tf2_ros
 from homework2.mymodule import trajectory
+from tf_conversions import transformations
 
 
 def pause_func():
@@ -21,17 +22,43 @@ def resume_func():
     # Publish velocities of something???
     pub.publish(Twist(Vector3(x = 1, y = 0, z = 0), Vector3(x = 0, y = 0, z = 0)))
 
+def static_broadcast():
+    #define theta_world as initial theta0
+    theta_world = trajectory.theta0(0)
+    print(theta_world)
+
+    # Create static broadcaster
+    stat_broadcaster = tf2_ros.StaticTransformBroadcaster()
+
+    #Set up worldtf type?
+    world_tf = TransformStamped()
+
+    # Set world_tf stamp, frame_id, child_id
+    world_tf.header.stamp = rospy.Time.now()
+    world_tf.header.frame_id = "world"
+    world_tf.child_frame_id = "base_link"
+
+    # Set quaternion
+    quaternion = transformations.quaternion_from_euler(0,0,0)
+
+    # Set world_tf transforms
+    world_tf.transform.translation.x = 0
+    world_tf.transform.translation.y = 0
+    world_tf.transform.translation.z = 0
+    world_tf.transform.rotation.x = quaternion[0]
+    world_tf.transform.rotation.y = quaternion[1]
+    world_tf.transform.rotation.z = quaternion[2]
+    world_tf.transform.rotation.w = quaternion[3]
+
+    stat_broadcaster.sendTransform(world_tf)
 
 if __name__ == '__main__':
     rospy.init_node('trajectory')
 
     rate = rospy.Rate(50)
-
-    # Create pause service
-    pause = rospy.Service("pause", Empty, pause_func)
-
-    # Create resume service
-    resume = rospy.Service("resume", Empty, resume_func)
+    
+    pause = rospy.Service("pause", Empty, pause_func) # Create pause service
+    resume = rospy.Service("resume", Empty, resume_func) # Create resume service
 
     # Retrieve parameters
     W = rospy.get_param('width')
@@ -42,25 +69,10 @@ if __name__ == '__main__':
     # Use Python package to calculate trajectory stuff
     trajectory = trajectory(W, H, T)
 
-    # x = (W/2)*sym.sin(2*sym.pi*t/T)
-    # xdot = x.diff(t)
-
-    # y = (H/2)*sym.sin(4*sym.pi*t/T)
-    # ydot = y.diff(t)
-
-    # theta = sym.atan(ydot/xdot)
-    # thetadot = theta.diff(t)
-
-    # v = sym.sqrt(xdot**2 + ydot**2)
-
-    # ang_vel_func = sym.lambdify(t,thetadot)
-    # lin_vel_func = sym.lambdify(t,v)
+    static_broadcast()
 
     # Set publisher for cmd_vel
     pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size = 10)
-
-    # Create static broadcaster
-    broadcaster = tf2_ros.StaticTransformBroadcaster()
 
     while not rospy.is_shutdown():
         t = rospy.get_time()

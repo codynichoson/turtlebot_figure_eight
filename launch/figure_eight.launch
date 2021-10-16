@@ -14,6 +14,6 @@
 </node>
 
 <!--Launch simodom node-->
-<node name="simodom" pkg="homework2" type="simodom" />
+<!-- <node name="simodom" pkg="homework2" type="simodom" /> -->
 
 </launch>

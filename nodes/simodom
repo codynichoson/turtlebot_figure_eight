@@ -8,13 +8,28 @@ from nav_msgs.msg import Odometry
 import tf2_ros
 from geometry_msgs.msg import TransformStamped
 
+
 def convert_pose(Pose):
     '''This is the callback function for the Pose subscriber'''
+    # read in x,y,z, lin and ang vel from pose
+
+    #odom2baselink
+
+
+
     broadcaster = tf2_ros.TransformBroadcaster()
+
+    #copy and paste stuff from trajectory starting at quaternion
+
+    #broadcast odom2baselink
+
     pub = rospy.Publisher("odom", Odometry, pub_callback)
 
-    #while not rospy.is_shutdown():
-    #    Odometry.header.frame_id = odom
+    #geometry_msgs???
+    #odom = Odometry()
+    #set odom header, frame_id, child_id, position, orientation, and twist
+
+    #publish odom
 
 
 def pub_callback(req):
