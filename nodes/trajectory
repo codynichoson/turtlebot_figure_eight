@@ -32,7 +32,7 @@ class Aclass:
         self.traj = trajectory(self.W, self.H, self.T)
 
         # Create world frame
-        self.static_broadcast
+        self.static_broadcast()
 
         # Run loop
         self.loopy()

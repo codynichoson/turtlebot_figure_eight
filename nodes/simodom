@@ -6,7 +6,7 @@ import rospy
 from turtlesim.msg import Pose
 from nav_msgs.msg import Odometry
 import tf2_ros
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped, Twist, Vector3
 from tf_conversions import transformations
 
 
@@ -53,15 +53,16 @@ def convert_pose(Pose):
 
     odom_quat = transformations.quaternion_from_euler(0,0,theta)
 
-    odom.pose.pose.position.x = 0
-    odom.pose.pose.position.y = 0
+    odom.pose.pose.position.x = x
+    odom.pose.pose.position.y = y
     odom.pose.pose.position.z = 0
     odom.pose.pose.orientation.x = odom_quat[0]
     odom.pose.pose.orientation.y = odom_quat[1]
     odom.pose.pose.orientation.z = odom_quat[2]
     odom.pose.pose.orientation.w = odom_quat[3]
-    odom.twist.twist.linear.x = lin_velocity
-    odom.twist.twist.angular.z = ang_velocity
+    odom.twist.twist = Twist(Vector3(x = lin_velocity, y = 0, z = 0), Vector3(x = 0, y = 0, z = ang_velocity))
+    # odom.twist.twist.linear.x = lin_velocity
+    # odom.twist.twist.angular.z = ang_velocity
 
     pub.publish(odom)
 
