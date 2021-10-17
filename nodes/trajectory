@@ -12,7 +12,8 @@ from tf_conversions import transformations
 class Aclass:
     def __init__(self):
         self.flag = 0
-        self.rate = rospy.Rate(50)
+        self.freq = rospy.get_param('~rate')
+        self.rate = rospy.Rate(self.freq)
 
         self.res_time = 0
         self.pause_time = 0
@@ -26,7 +27,6 @@ class Aclass:
         self.W = rospy.get_param('width')
         self.H = rospy.get_param('height')
         self.T = rospy.get_param('period')
-        #rate = rospy.get_param('~rate')
 
         # Use Python package to calculate trajectory stuff
         self.traj = trajectory(self.W, self.H, self.T)

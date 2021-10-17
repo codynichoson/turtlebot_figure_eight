@@ -8,6 +8,7 @@ from nav_msgs.msg import Odometry
 import tf2_ros
 from geometry_msgs.msg import TransformStamped, Twist, Vector3
 from tf_conversions import transformations
+from sensor_msgs.msg import JointState
 
 
 def convert_pose(Pose):
@@ -21,20 +22,20 @@ def convert_pose(Pose):
     # Create broadcaster
     broadcaster = tf2_ros.TransformBroadcaster()
 
-    #Set up worldtf type?
+    #Set up odom_tf type?
     odom_tf = TransformStamped()
 
-    # Set world_tf stamp, frame_id, child_id
+    # Set odom_tf stamp, frame_id, child_id
     odom_tf.header.stamp = rospy.Time.now()
     odom_tf.header.frame_id = "odom"
-    odom_tf.child_frame_id = "base_link"
+    odom_tf.child_frame_id = "base_footprint"
 
     # Set quaternion
     quaternion = transformations.quaternion_from_euler(0,0,theta)
 
     # Set world_tf transforms
-    odom_tf.transform.translation.x = 0
-    odom_tf.transform.translation.y = 0
+    odom_tf.transform.translation.x = x - 5.5
+    odom_tf.transform.translation.y = y - 5.5
     odom_tf.transform.translation.z = 0
     odom_tf.transform.rotation.x = quaternion[0]
     odom_tf.transform.rotation.y = quaternion[1]
@@ -49,32 +50,30 @@ def convert_pose(Pose):
 
     odom.header.stamp = rospy.Time.now()
     odom.header.frame_id = "odom"
-    odom.child_frame_id = 'base_link'
+    odom.child_frame_id = 'base_footprint'
 
     odom_quat = transformations.quaternion_from_euler(0,0,theta)
 
-    odom.pose.pose.position.x = x
-    odom.pose.pose.position.y = y
+    odom.pose.pose.position.x = x - 5.5
+    odom.pose.pose.position.y = y - 5.5
     odom.pose.pose.position.z = 0
     odom.pose.pose.orientation.x = odom_quat[0]
     odom.pose.pose.orientation.y = odom_quat[1]
     odom.pose.pose.orientation.z = odom_quat[2]
     odom.pose.pose.orientation.w = odom_quat[3]
     odom.twist.twist = Twist(Vector3(x = lin_velocity, y = 0, z = 0), Vector3(x = 0, y = 0, z = ang_velocity))
-    # odom.twist.twist.linear.x = lin_velocity
-    # odom.twist.twist.angular.z = ang_velocity
 
     pub.publish(odom)
 
-    #set odom header, frame_id, child_id, position, orientation, and twist
-
-    #publish odom
+    # joint_state = JointState()
+    # joint_state.position = [0]
+    # joint_state.velocity = [0]
+    # joint_state.effort = [0]
 
 if __name__ == '__main__':
     rospy.init_node('simodom')
 
     sub1 = rospy.Subscriber("turtle1/pose", Pose, convert_pose)
     
-
     # Spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
