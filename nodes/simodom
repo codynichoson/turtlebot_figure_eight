@@ -73,7 +73,7 @@ def convert_pose(Pose):
 if __name__ == '__main__':
     rospy.init_node('simodom')
 
-    sub1 = rospy.Subscriber("turtle1/pose", Pose, convert_pose)
+    sub1 = rospy.Subscriber("/pose", Pose, convert_pose)
     
     # Spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

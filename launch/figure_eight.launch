@@ -1,42 +1,26 @@
-<!-- This file launches ??? -->
-
 <launch>
-<arg name="mode" default="real" />
+<arg name="mode" default="sim" />
 
 <!-- launch group for turtlesim -->
 <group if="$(eval mode == 'sim')"> 
     <rosparam file="$(find homework2)/config/trajectory.yaml" />
-
-    <node type="rviz" name="rviz" pkg="rviz" args=" -d $(find homework2)/rviz/turtle_view.rviz" />
-
-    <node name="turtlesim_node" pkg="turtlesim" type="turtlesim_node" />
-
-    <node name="simodom" pkg="homework2" type="simodom" />
-
     <node name="trajectory" pkg="homework2" type="trajectory">
         <param name="rate" type="int" value="50"/>
     </node>
-
+    <node name="simodom" pkg="homework2" type="simodom" />
+    <node name="turtlesim_node" pkg="turtlesim" type="turtlesim_node" />
+    <node type="rviz" name="rviz" pkg="rviz" args=" -d $(find homework2)/rviz/turtle_view.rviz" />
     <param name="robot_description" command="$(find xacro)/xacro $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro" />
-
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" ></node>
-
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="rob_st_pub" ></node>
-
-
 </group>
 
 <!-- launch group for turtlebot -->
 <group if="$(eval mode == 'real')">
-    
     <rosparam file="$(find homework2)/config/trajectory.yaml" />
-    <node name="turtlesim_node" pkg="turtlesim" type="turtlesim_node" />
-    <node name="simodom" pkg="homework2" type="simodom" />
-
     <node name="trajectory" pkg="homework2" type="trajectory">
         <param name="rate" value="50"/>
     </node>
-
 </group>
 
 </launch>

@@ -1,0 +1,89 @@
+<robot name="i_am_arm" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:property name="arm_file" value="$(find homework2)/config/arm.yaml"/>
+    <xacro:property name="properties" value="${load_yaml(arm_file)}"/>
+    <xacro:property name="L1" value="${properties['Length1']}"/>
+    <xacro:property name="L2" value="${properties['Length2']}"/>
+    <xacro:property name="R1" value="${properties['Radius1']}"/>
+    <xacro:property name="R2" value="${properties['Radius2']}"/>
+
+    <xacro:property name="PI" value="3.141592653"/>
+
+    <link name="base_link"/>
+
+    <joint name="base_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="link1"/>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <link name="link1">
+        <visual>
+            <origin xyz="${L1/2} 0 0" rpy="${PI/2} 0 ${PI/2}"/>
+            <geometry>
+                <cylinder length="${L1}" radius="${R1}"/>
+            </geometry>
+            <material name="red">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>0
+
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${L1}" radius="${R1}"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0"/>
+            <mass value="1"/>
+            <inertia ixx="${(L1*L1/12) + (R1*R1/4)}" ixy="0" ixz="0"
+                     iyy="${(L1*L1/12) + (R1*R1/4)}" iyz="0"
+                     izz="${(R1*R1/2)}"/>
+        </inertial>
+    </link>
+
+    <joint name="link_joint" type="continuous">
+        <parent link="link1"/>
+        <child link="link2"/>
+        <origin xyz="${L1} 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <link name="link2">
+        <visual>
+            <origin xyz="${L2/2} 0 0" rpy="${PI/2} 0 ${PI/2}"/>
+            <geometry>
+                <cylinder length="${L2}" radius="${R2}"/>
+            </geometry>
+            <material name="blue">
+                <color rgba="0 0 1 1"/>
+            </material>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${L2}" radius="${R2}"/>
+            </geometry>
+        </collision>
+
+        <inertial>
+            <origin xyz="0 0 0"/>
+            <mass value="1"/>
+            <inertia ixx="${(L2*L2/12) + (R2*R2/4)}" ixy="0" ixz="0"
+                     iyy="${(L2*L2/12) + (R2*R2/4)}" iyz="0"
+                     izz="${(R2*R2/2)}"/>
+        </inertial>
+    </link>
+
+    <joint name="end_joint" type="fixed">
+        <parent link="link2"/>
+        <child link="end_effector"/>
+        <origin xyz="${L2} 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </joint>
+
+     <link name="end_effector"/>
+</robot>

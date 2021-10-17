@@ -7,7 +7,15 @@ project(homework2)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS message_generation turtlesim std_msgs)
+find_package(catkin REQUIRED COMPONENTS 
+geometry_msgs 
+message_generation 
+rospy
+sensor_msgs
+std_msgs 
+tf2_ros
+tf_conversions
+turtlesim)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -66,8 +74,9 @@ add_service_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
+  std_msgs
   turtlesim
-  std_msgs  # Or other packages containing msgs
+  # Or other packages containing msgs
 )
 
 ################################################
@@ -102,7 +111,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES homework2
-#  CATKIN_DEPENDS other_catkin_pkg
+CATKIN_DEPENDS message_runtime std_msgs turtlesim 
 #  DEPENDS system_lib
 )
 
@@ -156,10 +165,12 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  nodes/trajectory
+  nodes/simodom
+  nodes/arm_traj
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
