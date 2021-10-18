@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+""" 
+Publishes twist that will move a robot in a figure eight pattern.
+PUBLISHERS:
+  turtle1/cmd_vel Twist ~ the velocity of the turtlesim
+  cmd_vel Twist ~ the velocity of the turtlebot
+SERVICES:
+  /pause Empty ~ publishes zero velocities to turtle
+  /resume Empty ~ publishes calculated velocities to turtle
+"""
 
 import numpy as np
 import rospy

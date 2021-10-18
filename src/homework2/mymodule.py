@@ -7,11 +7,13 @@ class trajectory():
     def __init__(self, W, H, T):
         self.t = sym.symbols('t')
 
-        x = (W/2)*sym.sin(2*sym.pi*self.t/T)
-        self.xdot = x.diff(self.t)
+        self.x = (W/2)*sym.sin(2*sym.pi*self.t/T)
+        self.xdot = self.x.diff(self.t)
+        self.xddot = self.xdot.diff(self.t)
 
-        y = (H/2)*sym.sin(4*sym.pi*self.t/T)
-        self.ydot = y.diff(self.t)
+        self.y = (H/2)*sym.sin(4*sym.pi*self.t/T)
+        self.ydot = self.y.diff(self.t)
+        self.yddot = self.ydot.diff(self.t)
 
     def lin_vel(self, time):
         v = sym.sqrt(self.xdot**2 + self.ydot**2)
