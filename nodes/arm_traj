@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from sympy.utilities.lambdify import lambdify
 import rospy
 import sympy as sym
 from sympy import sin, cos, acos, atan2, pi, sqrt

@@ -1,11 +1,11 @@
 <robot name="i_am_arm" xmlns:xacro="http://ros.org/wiki/xacro">
 
-    <xacro:property name="arm_file" value="$(find homework2)/config/arm.yaml"/>
-    <xacro:property name="properties" value="${load_yaml(arm_file)}"/>
-    <xacro:property name="L1" value="${properties['Length1']}"/>
-    <xacro:property name="L2" value="${properties['Length2']}"/>
-    <xacro:property name="R1" value="${properties['Radius1']}"/>
-    <xacro:property name="R2" value="${properties['Radius2']}"/>
+    <xacro:property name="arm_yaml" value="$(find homework2)/config/arm.yaml"/>
+    <xacro:property name="arm_yaml_info" value="${load_yaml(arm_yaml)}"/>
+    <xacro:property name="L1" value="${arm_yaml_info['Length1']}"/>
+    <xacro:property name="L2" value="${arm_yaml_info['Length2']}"/>
+    <xacro:property name="R1" value="${arm_yaml_info['Radius1']}"/>
+    <xacro:property name="R2" value="${arm_yaml_info['Radius2']}"/>
 
     <xacro:property name="PI" value="3.141592653"/>
 
