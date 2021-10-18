@@ -20,13 +20,20 @@ class Aclass:
 
         self.pause = rospy.Service("pause", Empty, self.pause_func) # Create pause service
         self.resume = rospy.Service("resume", Empty, self.resume_func) # Create resume service
+
+        self.turtle = rospy.get_param('~robot_mode')
+
         # Set publisher for cmd_vel
-        self.pub = rospy.Publisher("/cmd_vel", Twist, queue_size = 10)
+        if self.turtle == 0:
+            self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size = 10)
+        elif self.turtle == 1:
+            self.pub = rospy.Publisher("cmd_vel", Twist, queue_size = 10)
 
         # Retrieve parameters
         self.W = rospy.get_param('width')
         self.H = rospy.get_param('height')
         self.T = rospy.get_param('period')
+        
 
         # Use Python package to calculate trajectory stuff
         self.traj = trajectory(self.W, self.H, self.T)

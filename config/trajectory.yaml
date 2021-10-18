@@ -1,3 +1,3 @@
-width: 5 # meters
-height: 4 # meters
-period: 10 # seconds
+width: 0.8 # meters
+height: 0.8 # meters
+period: 30 # seconds

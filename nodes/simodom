@@ -65,15 +65,15 @@ def convert_pose(Pose):
 
     pub.publish(odom)
 
-    # joint_state = JointState()
-    # joint_state.position = [0]
-    # joint_state.velocity = [0]
-    # joint_state.effort = [0]
-
 if __name__ == '__main__':
     rospy.init_node('simodom')
 
-    sub1 = rospy.Subscriber("/pose", Pose, convert_pose)
+    turtle = rospy.get_param('~robot_mode')
+
+    if turtle == 0:
+        sub1 = rospy.Subscriber("turtle1/pose", Pose, convert_pose)
+    elif turtle == 1:
+        sub1 = rospy.Subscriber("pose", Pose, convert_pose)
     
     # Spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
