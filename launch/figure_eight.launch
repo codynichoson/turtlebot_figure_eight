@@ -2,7 +2,7 @@
 <arg name="mode" default="sim" />
 
 <!-- launch group for turtlesim -->
-<group if="$(eval mode == 'sim')"> 
+<group if="$(eval arg('mode') == 'sim')"> 
     <rosparam file="$(find homework2)/config/trajectory.yaml" />
     <node name="trajectory" pkg="homework2" type="trajectory">
         <param name="rate" type="int" value="50"/>
@@ -16,11 +16,14 @@
 </group>
 
 <!-- launch group for turtlebot -->
-<group if="$(eval mode == 'real')">
+<group if="$(eval arg('mode') == 'real')">
     <rosparam file="$(find homework2)/config/trajectory.yaml" />
     <node name="trajectory" pkg="homework2" type="trajectory">
         <param name="rate" value="50"/>
     </node>
+    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch" >
+        <arg name="model" value="burger" />
+    </include>
 </group>
 
 </launch>
