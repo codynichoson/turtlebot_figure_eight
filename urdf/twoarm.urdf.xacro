@@ -24,10 +24,10 @@
             <geometry>
                 <cylinder length="${L1}" radius="${R1}"/>
             </geometry>
-            <material name="red">
-                <color rgba="1 0 0 1"/>
+            <material name="light_purple">
+                <color rgba="1 0.4 1 1"/>
             </material>
-        </visual>0
+        </visual>
 
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -58,8 +58,8 @@
             <geometry>
                 <cylinder length="${L2}" radius="${R2}"/>
             </geometry>
-            <material name="blue">
-                <color rgba="0 0 1 1"/>
+            <material name="dark_purple">
+                <color rgba="0.4 0.2 0.6 1"/>
             </material>
         </visual>
 
