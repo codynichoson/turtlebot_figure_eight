@@ -5,7 +5,7 @@
 <rosparam file="$(find homework2)/config/arm.yaml" />
 <node name="arm_traj" pkg="homework2" type="arm_traj" unless="$(arg use_jsp)"/>
 <param name="robot_description" command="$(find xacro)/xacro '$(find homework2)/urdf/twoarm.urdf.xacro'"/>
-<node pkg="robot_state_publisher" type="robot_state_publisher" name="rob_st_pub" />
+<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" />
 <node name="rviz" pkg="rviz" type="rviz" args=" -d $(find homework2)/rviz/arm_view.rviz"/>
 <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" if="$(arg use_jsp)"/>
 

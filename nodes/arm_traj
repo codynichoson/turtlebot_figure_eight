@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+""" 
+Calculates both theta values for two-link arm mechanism and publishes them to 
+joint_states topic
+
+PUBLISHERS:
+  + joint_states JointState ~ publishes two theta values for two-link arm mechanism 
+"""
 
 import rospy
 import sympy as sym
@@ -7,54 +14,104 @@ from sensor_msgs.msg import JointState
 
 class arm_trajectory:
     def __init__(self):
+        """ Initializes arm_trajectory class"""
+        # Create joint_states publisher
         self.pub = rospy.Publisher("joint_states", JointState, queue_size = 10)
 
+        # Read in arm mechanism characteristics as parameters
         self.T = rospy.get_param('Period')
         self.L1 = rospy.get_param('Length1')
         self.L2 = rospy.get_param('Length2')
 
+        # Set publishing rate (Hz)
         self.rate = rospy.Rate(20)
 
-    def get_xy(self, t):    
+    def get_xy(self, t):
+        """ Uses t value to calculate x and y values for use in theta equations
+
+        Args:
+            self : arm_trajectory class
+            t : instantaneous time value
+
+        Returns:
+            x : x-coordinate
+            y : y-coordinate
+        """
+        # Calculate h, x, and y using provided equations
         self.h = (2/3)*(self.L1 + self.L2)
         self.x = 0.9*cos(2*pi*t/self.T)*sqrt((self.L1 + self.L2)**2 - self.h**2)
         self.y = (2/3)*(self.L1 + self.L2)
 
+        # Return x and y values
         return self.x, self.y
 
     def get_theta(self, x, y):
+        """ Uses x and y values to calculate theta1 and theta2
+
+        Args:
+            self : arm_trajectory class
+            x : x-coordinate
+            y : y-coordinate
+
+        Returns:
+            theta1 : angle of first link
+            theta2 : angle of second link
+        """
         # Equations below sourced from Lynch, Park, Modern Robotics Chapter 6
         beta = acos((self.L1**2 + self.L2**2 - x**2 - y**2)/(2*self.L1*self.L2))
         alpha = acos((x**2 + y**2 + self.L1**2 - self.L2**2)/(2*self.L1*sqrt(x**2 + y**2)))
         gamma = atan2(y,x)
-        # Equations above sourced from Lynch, Park, Modern Robotics Chapter 6
-
         self.theta1 = gamma - alpha
         self.theta2 = pi - beta
+        # Equations above sourced from Lynch, Park, Modern Robotics Chapter 6
 
+        # Return theta values
         return self.theta1, self.theta2
 
     def loopy(self):
+        """ Contains loop that continuously updates time value and sends to calculations
+
+        Args:
+            self : arm_trajectory class
+
+        Returns:
+            None
+        """
         while not rospy.is_shutdown():
+            # Retrieve current time as t
             t = rospy.get_time()
+
+            # Retreive x and y values using get_xy function
             x,y = self.get_xy(t)
+
+            # Retrieve theta1 and theta2 values using get_theta function
             theta1, theta2 = self.get_theta(x,y)
 
+            # Initialize joints as JointState message
             self.joints = JointState()
+
+            # Set time stamp and joint names
             self.joints.header.stamp = rospy.Time.now()
             self.joints.name = ['base_joint', 'link_joint']
+
+            # Velocity and effort are zero, but positions are constantly updated thetas
             self.joints.velocity = [0, 0]
             self.joints.effort = [0, 0]
             self.joints.position = [theta1, theta2] 
         
+            # Publish joint message
             self.pub.publish(self.joints)
             self.rate.sleep()
 
 
 if __name__ == '__main__':
+    # Initialize node
     rospy.init_node('arm_traj')
 
+    # Call arm_trajectory class
     arm = arm_trajectory()
+
+    # Run loop using loopy function
     arm.loopy()
 
     # Spin() simply keeps python from exiting until this node is stopped

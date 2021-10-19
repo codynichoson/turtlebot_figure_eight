@@ -21,22 +21,24 @@ from geometry_msgs.msg import TransformStamped, Twist, Vector3
 from tf_conversions import transformations
 from sensor_msgs.msg import JointState
 
-
 def convert_pose(Pose):
-    """ Callback function for pose subscriber. Converts pose into 
+    """ Callback function for pose subscriber. Converts pose into odom_tf transform
+    and Odometry message. Then broadcasts and publishes them, respectively.
 
-        Args:
-           Pose : turtle1/pose data retrieved from turtlesim
+      Args:
+        Pose : turtle1/pose data retrieved from turtlesim
 
-        Returns:
-           None
+      Returns:
+        None
     """
+    # Gather pose data from turtlesim Pose message
     x = Pose.x
     y = Pose.y
     theta = Pose.theta
     lin_velocity = Pose.linear_velocity
     ang_velocity = Pose.angular_velocity
 
+    # BROADCASTER STUFF ---------------------------------------
     # Create broadcaster
     broadcaster = tf2_ros.TransformBroadcaster()
 
@@ -60,32 +62,44 @@ def convert_pose(Pose):
     odom_tf.transform.rotation.z = quaternion[2]
     odom_tf.transform.rotation.w = quaternion[3]
 
+    # Send broadcast of odom_tf
     broadcaster.sendTransform(odom_tf)
 
+    # PUBLISHER STUFF ---------------------------------------
+    # Create odometry publisher
     pub = rospy.Publisher("odom", Odometry)
 
+    # Initialize odom variable of type Odometry
     odom = Odometry()
 
+    # Set time stamp, frame_id, and child_frame_id for odom
     odom.header.stamp = rospy.Time.now()
     odom.header.frame_id = "odom"
     odom.child_frame_id = 'base_footprint'
 
-    odom_quat = transformations.quaternion_from_euler(0,0,theta)
-
+    # Set odom position values (offsetting by 5.5 to move roughly to center of plane)
     odom.pose.pose.position.x = x - 5.5
     odom.pose.pose.position.y = y - 5.5
     odom.pose.pose.position.z = 0
+
+    # Create quaternion for odom
+    odom_quat = transformations.quaternion_from_euler(0,0,theta)
+
+    # Set odom orientation values using quaternion
     odom.pose.pose.orientation.x = odom_quat[0]
     odom.pose.pose.orientation.y = odom_quat[1]
     odom.pose.pose.orientation.z = odom_quat[2]
     odom.pose.pose.orientation.w = odom_quat[3]
     odom.twist.twist = Twist(Vector3(x = lin_velocity, y = 0, z = 0), Vector3(x = 0, y = 0, z = ang_velocity))
 
+    # Publish populated Odometry message 
     pub.publish(odom)
 
 if __name__ == '__main__':
+    # Initialize node
     rospy.init_node('simodom')
 
+    # Create subscriber to turtlesim pose
     sub1 = rospy.Subscriber("turtle1/pose", Pose, convert_pose)
 
     # Spin() simply keeps python from exiting until this node is stopped
