@@ -41,8 +41,8 @@ class trajectory():
            ang_vel_func(time) : angular velocity at given time
         """
         self.theta = sym.atan(self.ydot/self.xdot)
-        self.w = self.theta.diff(self.t)
-        ang_vel_func = sym.lambdify(self.t,self.w)
+        self.angular_vel = self.theta.diff(self.t)
+        ang_vel_func = sym.lambdify(self.t, self.angular_vel)
         return ang_vel_func(time)
 
     def theta0(self, time):
@@ -89,9 +89,5 @@ class trajectory():
         return v_func(0)
     
     def w_test(self):
-        w_func = sym.lambdify(self.t, self.w)
+        w_func = sym.lambdify(self.t, self.angular_vel)
         return w_func(0)
-
-if __name__ == "__main__":
-    traj = trajectory(1,1,10)
-    print(traj.x_test())

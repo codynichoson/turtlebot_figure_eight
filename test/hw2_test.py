@@ -1,7 +1,7 @@
 import unittest
 import homework2.trajectory_calcs
 import sympy as sym
-from numpy import pi
+from numpy import pi, sqrt
 
 W = 1
 H = 1
@@ -36,7 +36,7 @@ class GettingTesty(unittest.TestCase):
 
     def test_v(self):
         global traj
-        self.assertEquals(traj.v_test(), 0)
+        self.assertEquals(traj.v_test(), (pi*sqrt(5))/10)
 
     def test_w(self):
         global traj
