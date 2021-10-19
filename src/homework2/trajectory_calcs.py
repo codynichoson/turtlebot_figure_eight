@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """ Performs calculations for figure eight trajectory for turtlesim and turtlebot"""
 
-import numpy as np
 import sympy as sym
 
 class trajectory():
