@@ -62,3 +62,37 @@ The dimensional properties of the figure eight and time period of the pattern ca
 
 #### Configuration Changes
 The dimensional properties of the arm links and time period of the pattern can be adjusted in the `arm.yaml` file found in `homework-2-codynichoson/config/arm.yaml`.
+
+## Launchfiles and Nodes
+### Turtlesim and Turtlebot Figure Eight
+#### Launchfiles
+**`figure_eight.launch`**
+
+Launches turtlesim and rviz visualization of Turtlebot if launched as default or with `mode:=sim`. Launches to real Turtlebot if launched with `mode:=real`.
+#### Nodes
+**`trajectory`**
+
+Publishes a `Twist` that will move a robot in a figure eight pattern of specified size. Broadcasts a world transform using a static transform broadcaster.
+
+**`simodom`**
+
+Subscribes to and converts `pose` data from `turtlesim` into both a transform that is published as an `Odometry` message and
+broadcasted as an odometry transform.
+
+### Xacro Arm
+#### Launchfiles
+**`arm_basics.launch`**
+
+Launches the arm mechanism visualization in `rviz` with automated trajectory if launched as default or with `use_jsp:=false`. Launches with manual joint movement using a GUI when launched with `use_jsp:=true`. 
+
+**`arm_mark.launch`**
+
+Launches the arm mechanism visualization in `rviz` with end-effector markings and automated trajectory if launched as default or with `use_jsp:=false`. Launches with end-effector markings and manual joint movement using a GUI when launched with `use_jsp:=true`. 
+#### Nodes
+**`arm_traj`**
+
+Calculates both theta values for two-link arm mechanism and publishes them to `joint_states` topic.
+
+**`arm_marker`**
+
+Listens to transforms being broadcasted (the end-effector in this case) and publishes a marker that is visualized in `rviz`.
