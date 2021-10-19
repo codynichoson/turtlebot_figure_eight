@@ -26,8 +26,8 @@ class trajectory():
         Returns:
            lin_vel_func(time) : linear velocity at given time
         """
-        v = sym.sqrt(self.xdot**2 + self.ydot**2)
-        lin_vel_func = sym.lambdify(self.t,v)
+        self.v = sym.sqrt(self.xdot**2 + self.ydot**2)
+        lin_vel_func = sym.lambdify(self.t,self.v)
         return lin_vel_func(time)
 
     def ang_vel(self, time):
@@ -35,14 +35,14 @@ class trajectory():
 
         Args:
            self : trajectory class
-           time : instantaneous time
+           time : instantaneous timeS
 
         Returns:
            ang_vel_func(time) : angular velocity at given time
         """
-        theta = sym.atan(self.ydot/self.xdot)
-        thetadot = theta.diff(self.t)
-        ang_vel_func = sym.lambdify(self.t,thetadot)
+        self.theta = sym.atan(self.ydot/self.xdot)
+        self.w = self.theta.diff(self.t)
+        ang_vel_func = sym.lambdify(self.t,self.w)
         return ang_vel_func(time)
 
     def theta0(self, time):
@@ -83,6 +83,14 @@ class trajectory():
     def yddot_test(self):
         yddot_func = sym.lambdify(self.t, self.yddot)
         return yddot_func(0)
+    
+    def v_test(self):
+        v_func = sym.lambdify(self.t, self.v)
+        return v_func(0)
+    
+    def w_test(self):
+        w_func = sym.lambdify(self.t, self.w)
+        return w_func(0)
 
 if __name__ == "__main__":
     traj = trajectory(1,1,10)

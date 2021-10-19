@@ -1,12 +1,12 @@
 import unittest
-import homework2.mymodule
+import homework2.trajectory_calcs
 import sympy as sym
 from numpy import pi
 
 W = 1
 H = 1
 T = 10
-traj = homework2.mymodule.trajectory(W,H,T)
+traj = homework2.trajectory_calcs.trajectory(W,H,T)
 
 class GettingTesty(unittest.TestCase):
     
@@ -33,6 +33,14 @@ class GettingTesty(unittest.TestCase):
     def test_yddot(self):
         global traj
         self.assertEquals(traj.yddot_test(), 0)
+
+    def test_v(self):
+        global traj
+        self.assertEquals(traj.v_test(), 0)
+
+    def test_w(self):
+        global traj
+        self.assertEquals(traj.w_test(), 0)
 
 if __name__ == "__main__":
     import rosunit
