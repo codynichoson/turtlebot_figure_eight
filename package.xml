@@ -63,7 +63,6 @@
   <exec_depend>joint_state_publisher_gui</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>turtlebot3_bringup</exec_depend>
-
   <build_depend>tf_conversions</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>

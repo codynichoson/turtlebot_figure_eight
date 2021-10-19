@@ -1,8 +1,8 @@
 #!/usr/bin/env python
+""" Performs calculations for figure eight trajectory for turtlesim and turtlebot"""
 
 import numpy as np
 import sympy as sym
-
 
 class trajectory():
     def __init__(self, W, H, T):
@@ -17,17 +17,44 @@ class trajectory():
         self.yddot = self.ydot.diff(self.t)
 
     def lin_vel(self, time):
+        """ Calculates linear velocity at given time
+
+        Args:
+           self : trajectory class
+           time : instantaneous time
+
+        Returns:
+           lin_vel_func(time) : linear velocity at given time
+        """
         v = sym.sqrt(self.xdot**2 + self.ydot**2)
         lin_vel_func = sym.lambdify(self.t,v)
         return lin_vel_func(time)
 
     def ang_vel(self, time):
+        """ Calculates angular velocity at given time
+
+        Args:
+           self : trajectory class
+           time : instantaneous time
+
+        Returns:
+           ang_vel_func(time) : angular velocity at given time
+        """
         theta = sym.atan(self.ydot/self.xdot)
         thetadot = theta.diff(self.t)
         ang_vel_func = sym.lambdify(self.t,thetadot)
         return ang_vel_func(time)
 
     def theta0(self, time):
+        """ Calculates starting angle for turtle
+
+        Args:
+           self : trajectory class
+           time : instantaneous time
+
+        Returns:
+           theta0 : angle that turtle begins movement at
+        """
         theta = sym.atan(self.ydot/self.xdot)
         ang_func = sym.lambdify(self.t, theta)
         theta0 = ang_func(0)

@@ -21,7 +21,7 @@ from geometry_msgs.msg import Twist, Vector3, TransformStamped
 from std_srvs.srv import Empty, EmptyResponse
 import sympy as sym
 import tf2_ros
-from homework2.mymodule import trajectory
+from homework2.trajectory_calcs import trajectory
 from tf_conversions import transformations
 
 class FigureEight:

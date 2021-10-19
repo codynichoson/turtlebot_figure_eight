@@ -92,7 +92,7 @@ class arm_trajectory:
 
             # Set time stamp and joint names
             self.joints.header.stamp = rospy.Time.now()
-            self.joints.name = ['base_joint', 'link_joint']
+            self.joints.name = ['base_link1', 'link1_link2']
 
             # Velocity and effort are zero, but positions are constantly updated thetas
             self.joints.velocity = [0, 0]
