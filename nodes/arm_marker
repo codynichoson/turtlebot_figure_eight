@@ -11,8 +11,6 @@ LISTENERS:
 """
 
 import rospy
-from math import cos, sin, pi
-from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from visualization_msgs.msg import Marker
 import tf2_ros
 

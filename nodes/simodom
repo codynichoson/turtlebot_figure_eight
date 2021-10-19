@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """ 
-Subscribes to and converts pose from turtlesim into both a transform that is broadcasted as odometry and
-broadcasted as odom_tf transform
+Subscribes to and converts pose data from turtlesim into both a transform that is published as an 
+Odometry message and broadcasted as an odometry transform.
 
 SUBSCRIBERS:
   + turtle1/pose Pose ~ subscribes to pose information from turtlesim, runs convert_pose function

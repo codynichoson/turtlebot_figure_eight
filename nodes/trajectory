@@ -15,11 +15,9 @@ BROADCASTERS:
   + stat_broadcaster StaticTransformBroadcaster ~ broadcasts world_tf transform
 """
 
-import numpy as np
 import rospy
 from geometry_msgs.msg import Twist, Vector3, TransformStamped
 from std_srvs.srv import Empty, EmptyResponse
-import sympy as sym
 import tf2_ros
 from homework2.trajectory_calcs import trajectory
 from tf_conversions import transformations
