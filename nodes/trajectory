@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 """ 
-Publishes twist that will move a robot in a figure eight pattern.
+Publishes twist that will move a robot in a figure eight pattern of specified size.
+Broadcasts world transform on static transform broadcaster.
+
 PUBLISHERS:
   + turtle1/cmd_vel Twist ~ the velocity of the turtlesim
   + cmd_vel Twist ~ the velocity of the turtlebot
+
 SERVICES:
   + /pause Empty ~ publishes zero velocities to turtle
   + /resume Empty ~ publishes calculated velocities to turtle
+
+BROADCASTERS:
+  + stat_broadcaster StaticTransformBroadcaster ~ broadcasts world_tf transform
 """
 
 import numpy as np
@@ -18,14 +24,16 @@ import tf2_ros
 from homework2.mymodule import trajectory
 from tf_conversions import transformations
 
-class Aclass:
+class FigureEight:
     def __init__(self):
+        """ Initialization for FigureEight class"""
+        
         self.flag = 0
         self.freq = rospy.get_param('~rate')
         self.rate = rospy.Rate(self.freq)
 
-        self.res_time = 0
-        self.pause_time = 0
+        self.res_time = 0 # Initialize resume time
+        self.pause_time = 0 # Initialize pause time
 
         self.pause = rospy.Service("pause", Empty, self.pause_func) # Create pause service
         self.resume = rospy.Service("resume", Empty, self.resume_func) # Create resume service
@@ -54,25 +62,51 @@ class Aclass:
         self.loopy()
 
     def pause_func(self, req):
-        '''This is the callback function of the pause service'''
+        """ Pause function to stop turtle velocities
+
+        Args:
+           self : FigureEight class
+           req : Service request
+
+        Returns:
+           EmptyResponse
+        """
         self.flag = 0
         self.pause_time = rospy.get_time() + self.pause_time
         return EmptyResponse()
 
     def resume_func(self, req):
-        '''This is the callback function of the resume service'''
+        """ Resume function to start/restart turtle velocities
+
+        Args:
+           self : FigureEight class
+           req : Service request
+
+        Returns:
+           EmptyResponse
+        """
+        
         self.flag = 1
         self.res_time = rospy.get_time() + self.res_time
         return EmptyResponse()
 
     def static_broadcast(self):
+        """ Function to create and statically broadcast world_tf transform
+
+        Args:
+           self : FigureEight class
+
+        Returns:
+           None
+        """
+
         #define theta_world as initial theta0
         theta_world = self.traj.theta0(0)
 
         # Create static broadcaster
         stat_broadcaster = tf2_ros.StaticTransformBroadcaster()
 
-        #Set up worldtf type?
+        #Set up worldtf type
         world_tf = TransformStamped()
 
         # Set world_tf stamp, frame_id, child_id
@@ -95,9 +129,21 @@ class Aclass:
         stat_broadcaster.sendTransform(world_tf)
     
     def loopy(self):
+        """ Function containing while loop to continuously publish appropriate Twist messages to
+        cmd_vel based on resume/pause state
+
+        Args:
+           self : FigureEight class
+
+        Returns:
+           None
+        """
         
         while not rospy.is_shutdown():
+            # Calculate t value based on cumulative resume and pause times
             t = rospy.get_time() - (self.res_time - self.pause_time)
+
+            # If resume, publish velocities. If pause, publish zero velocities
             if self.flag == 1:
                 self.pub.publish(Twist(Vector3(x = self.traj.lin_vel(t), y = 0, z = 0), Vector3(x = 0, y = 0, z = self.traj.ang_vel(t))))
             elif self.flag == 0:
@@ -106,9 +152,11 @@ class Aclass:
             self.rate.sleep()
 
 if __name__ == '__main__':
+    # Initialize node
     rospy.init_node('trajectory')
 
-    Aclass()
+    # Call class
+    FigureEight()
 
     # Spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
